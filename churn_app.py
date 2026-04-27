@@ -93,17 +93,24 @@ if model is not None:
         
         input_df = pd.DataFrame([input_data])
         
-        # Encode binary features
+        # ── Encode binary features with same mapping used in training ──────────
         input_df['gender'] = input_df['gender'].map({'Male': 1, 'Female': 0})
         for col in ['Partner', 'Dependents', 'PhoneService', 'PaperlessBilling']:
-            if col in input_df.columns:
-                input_df[col] = input_df[col].map({'Yes': 1, 'No': 0})
-        
-        # Encode categorical features using saved encoders
+            input_df[col] = input_df[col].map({'Yes': 1, 'No': 0})
+
+        # ── Encode multi-class features using saved LabelEncoders ─────────────
         for column, encoder in encoders.items():
-            if column in input_df.columns and input_df[column].dtype == 'object':
+            if column in input_df.columns:
+                # Handle any unseen labels gracefully
+                known_classes = list(encoder.classes_)
+                input_df[column] = input_df[column].apply(
+                    lambda x: x if x in known_classes else known_classes[0]
+                )
                 input_df[column] = encoder.transform(input_df[column])
-        
+
+        # ── Ensure all columns are numeric before passing to XGBoost ──────────
+        input_df = input_df.astype(float)
+
         prediction = model.predict(input_df)[0]
         proba = model.predict_proba(input_df)[0]
         
@@ -113,9 +120,9 @@ if model is not None:
         
         with col1:
             if prediction == 1:
-                st.markdown('<div class="prediction-box churn">WILL CHURN</div>', unsafe_allow_html=True)
+                st.markdown('<div class="prediction-box churn">⚠️ WILL CHURN</div>', unsafe_allow_html=True)
             else:
-                st.markdown('<div class="prediction-box no-churn">WILL STAY</div>', unsafe_allow_html=True)
+                st.markdown('<div class="prediction-box no-churn">✅ WILL STAY</div>', unsafe_allow_html=True)
         
         with col2:
             st.metric("Confidence", f"{max(proba) * 100:.1f}%")
