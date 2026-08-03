@@ -18,7 +18,7 @@ A machine learning project to predict customer churn for a telecom company using
 
 ## Overview
 
-Customer churn — when customers stop using a service — is a critical business problem in the telecom industry. This project builds a binary classification model to predict whether a customer will churn, enabling proactive retention strategies.
+Customer churn -> when customers stop using a service, is a critical business problem in the telecom industry. This project builds a binary classification model to predict whether a customer will churn, enabling proactive retention strategies.
 
 Key highlights:
 - **Dataset**: 7,043 telecom customers with 20 features
@@ -125,15 +125,4 @@ Then open your browser at `http://localhost:8501`.
 
 ---
 
-## Dependencies
 
-```
-numpy, pandas, matplotlib, seaborn
-scikit-learn, imbalanced-learn, xgboost
-streamlit, plotly, joblib
-```
-
-Install all with:
-```bash
-pip install -r requirements.txt
-```
